@@ -1,10 +1,12 @@
 
+# Acordate de armar el requiremetns txt
 # Git hub comandos
 # git init
 # git config --global user.name "Gian Filippetti"
 # git config --global user.email 'gian_filippetti_97@hotmail.com'
 # git add . https://github.com/GianFilippetti/dashboard-streamlit-LLA.git
 # git commit -m "Primer commit - Dashboard Streamlit"
+# git remote add origin https://github.com/GianFilippetti/dashboard-streamlit-LLA.git solo si lo teness q añadir por primera vez
 # git branch -M main
 # git push -u origin main
 # streamlit run dashboard.py

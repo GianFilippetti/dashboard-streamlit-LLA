@@ -3,7 +3,7 @@
 # git init
 # git config --global user.name "Gian Filippetti"
 # git config --global user.email 'gian_filippetti_97@hotmail.com'
-# git add .
+# git add . https://github.com/GianFilippetti/dashboard-streamlit-LLA.git
 # git commit -m "Primer commit - Dashboard Streamlit"
 # git branch -M main
 # git push -u origin main

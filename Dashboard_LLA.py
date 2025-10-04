@@ -40,52 +40,37 @@ def login():
             else:
                 st.error("❌ Usuario o contraseña incorrectos")
 
+# ---- DASHBOARD ----
 def dashboard():
     st.title("📊 Dashboard desde Google Drive (.xlsx)")
 
-    # URL directa para exportar como Excel
     url = "https://docs.google.com/spreadsheets/d/1s9364GPO8W_0O-umugtyU-uHVlAKUnCEgj1WIturaEg/export?format=xlsx"
     response = requests.get(url)
+    df = pd.read_excel(BytesIO(response.content), engine="openpyxl")
+    
+    st.subheader("Vista previa de los datos")
+    st.dataframe(df.head())
+    
+    # Columnas a graficar
+    x_col = "Fecha"
+    y_col = "Cantidad_seguidores_pagina_principal"
+    df[y_col] = pd.to_numeric(df[y_col], errors="coerce")
+    
+    fig = px.line(df, x=x_col, y=y_col, markers=True)
+    fig.update_layout(
+        xaxis_title=x_col,
+        yaxis_title=y_col,
+        title=f"{y_col} vs {x_col}",
+        template="plotly_white"
+    )
+    st.plotly_chart(fig, use_container_width=True)
 
-    # Leer todas las hojas
-    all_sheets = pd.read_excel(BytesIO(response.content), sheet_name=None, engine="openpyxl")
+# ---- INICIALIZAR SESSION_STATE ----
+if "auth" not in st.session_state:
+    st.session_state["auth"] = False
 
-    # Crear pestañas
-    tab1, tab2 = st.tabs(["📈 Seguidores", "🎪 Stand y QR"])
-
-    # ---- Hoja 1 ----
-    with tab1:
-        df1 = all_sheets["Hoja1"]  # Asegurate del nombre real de la hoja
-        st.subheader("📄 Vista previa - Hoja 1 (Seguidores)")
-        st.dataframe(df1.head())
-
-        # Gráficos
-        fig1 = px.line(df1, x="Fecha", y="Cantidad_seguidores_pagina_principal", 
-                    title="Evolución Seguidores Página Principal", markers=True)
-        st.plotly_chart(fig1, use_container_width=True)
-
-        fig2 = px.line(df1, x="Fecha", y="Cantidad_seguidores_pagina_juventud", 
-                    title="Evolución Seguidores Página Juventud", markers=True)
-        st.plotly_chart(fig2, use_container_width=True)
-
-        fig3 = px.line(df1, x="Fecha", y="Cantidad_personas_activas", 
-                    title="Cantidad de Personas Activas", markers=True)
-        st.plotly_chart(fig3, use_container_width=True)
-
-    # ---- Hoja 2 ----
-    with tab2:
-        df2 = all_sheets["Hoja2"]  # Asegurate del nombre real de la hoja
-        st.subheader("📄 Vista previa - Hoja 2 (Stand y QR)")
-        st.dataframe(df2.head())
-
-        fig4 = px.bar(df2, x="Fecha", y="Stand cantidad de personas que se acercaron",
-                    title="Personas que se acercaron al stand")
-        st.plotly_chart(fig4, use_container_width=True)
-
-        fig5 = px.bar(df2, x="Fecha", y="Cantidad de personas que escaneron el QR",
-                    title="Personas que escanearon el QR")
-        st.plotly_chart(fig5, use_container_width=True)
-
-        fig6 = px.line(df2, x="Fecha", y="Cantidad reacciones en el video",
-                    title="Reacciones en el Video", markers=True)
-        st.plotly_chart(fig6, use_container_width=True)
+# ---- FLUJO PRINCIPAL ----
+if not st.session_state["auth"]:
+    login()
+else:
+    dashboard()
